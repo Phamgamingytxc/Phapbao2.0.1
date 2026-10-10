@@ -1,0 +1,26 @@
+   name: Build PhapBaoVIP
+
+   on:
+     push:
+     workflow_dispatch:
+
+   jobs:
+     build:
+       runs-on: ubuntu-latest
+       steps:
+         - uses: actions/checkout@v4
+         - uses: actions/setup-java@v4
+           with:
+             distribution: temurin
+             java-version: '21'
+         - name: Giai nen source
+           run: |
+             for f in *.zip; do unzip -o "$f" -d src_unzipped; done
+         - name: Build
+           run: |
+             cd "$(dirname "$(find src_unzipped -name pom.xml | head -1)")"
+             mvn -B clean package
+         - uses: actions/upload-artifact@v4
+           with:
+             name: PhapBaoVIP-jar
+             path: src_unzipped/**/target/PhapBaoVIP-1.0.0.jar
